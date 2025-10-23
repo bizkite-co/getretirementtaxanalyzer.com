@@ -24,6 +24,7 @@ module.exports = function(eleventyConfig) {
       sizes,
       loading: "lazy",
       decoding: "async",
+      class: "w-full h-auto", // Add Tailwind classes here
     };
 
     return Image.generateHTML(metadata, imageAttributes);

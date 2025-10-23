@@ -5,6 +5,7 @@
   "main": "script.js",
   "scripts": {
     "start": "npx @11ty/eleventy --serve",
+    "watch": "npx @11ty/eleventy --watch",
     "build": "npx @11ty/eleventy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -5,7 +5,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("script.js");
   eleventyConfig.addPassthroughCopy("favicon.ico");
 
-  eleventyConfig.addNunjucksFilter("markdown", (content) => {
+  eleventyConfig.addPairedNunjucksShortcode("markdown", (content) => {
     return markdownIt().render(content);
   });
 

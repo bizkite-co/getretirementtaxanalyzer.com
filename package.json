@@ -1,0 +1,26 @@
+{
+  "name": "getretirementtaxanalyzer.com",
+  "version": "1.0.0",
+  "description": "Read Me",
+  "main": "script.js",
+  "scripts": {
+    "start": "npx @11ty/eleventy --serve",
+    "build": "npx @11ty/eleventy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bizkite-co/getretirementtaxanalyzer.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bizkite-co/getretirementtaxanalyzer.com/issues"
+  },
+  "homepage": "https://github.com/bizkite-co/getretirementtaxanalyzer.com#readme",
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.2"
+  }
+}

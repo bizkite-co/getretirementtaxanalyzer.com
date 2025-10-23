@@ -1,7 +1,13 @@
+const markdownIt = require("markdown-it");
+
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("style.css");
   eleventyConfig.addPassthroughCopy("script.js");
   eleventyConfig.addPassthroughCopy("favicon.ico");
+
+  eleventyConfig.addNunjucksFilter("markdown", (content) => {
+    return markdownIt().render(content);
+  });
 
   return {
     dir: {

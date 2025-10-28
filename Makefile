@@ -10,10 +10,11 @@ help: ## Display this help screen
 # ==============================================================================
 
 build: ## Build the Eleventy site and CSS
+	npx postcss-cli src/style.css -o _site/style.css
 	npx @11ty/eleventy
 
 start: ## Start the development server with live reload
-	npx @11ty/eleventy --serve
+	npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --serve
 
 watch: ## Watch for changes and rebuild (without serving)
-	npx @11ty/eleventy --watch
+	npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --watch

@@ -5,8 +5,6 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy("src/assets/");
 
-
-
   eleventyConfig.addPairedNunjucksShortcode("markdown", (content) => {
     return markdownIt().render(content);
   });

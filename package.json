@@ -4,10 +4,10 @@
   "description": "Read Me",
   "main": "script.js",
   "scripts": {
-    "start": "npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --serve",
-    "watch": "npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --watch",
-    "build": "npm run build:css && npx @11ty/eleventy",
-    "build:css": "npx postcss-cli src/style.css -o _site/style.css",
+    "start": "make start",
+    "watch": "make watch",
+    "build": "make build",
+    "build:css": "make build-css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

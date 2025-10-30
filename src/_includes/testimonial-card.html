@@ -1,0 +1,12 @@
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+            <div class="card-text flex-grow-1">{{ testimonial.content | safe }}</div>
+            <h5 class="card-title mt-3">{{ testimonial.data.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ testimonial.data.title }} at {{ testimonial.data.company }}</h6>
+            {% if testimonial.data.linkedIn %}
+                <a href="{{ testimonial.data.linkedIn }}" target="_blank" class="card-link">LinkedIn</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

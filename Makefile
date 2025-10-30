@@ -10,13 +10,13 @@ help: ## Display this help screen
 # ==============================================================================
 
 build: build-css ## Build the Eleventy site and CSS
-	npx @11ty/eleventy
+	DEBUG=Eleventy* npx @11ty/eleventy > logs/eleventy.log 2>&1
 
 build-css: ## Compile CSS with PostCSS and Tailwind
 	npx postcss-cli src/style.css -o _site/style.css
 
 start: ## Start the development server with live reload
-	npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --serve --port 8081
+	npx postcss-cli src/style.css -o _site/style.css --watch & DEBUG=Eleventy* npx @11ty/eleventy --serve --port 8081 > logs/eleventy.log 2>&1
 
 watch: ## Watch for changes and rebuild (without serving)
 	npx postcss-cli src/style.css -o _site/style.css --watch & npx @11ty/eleventy --watch

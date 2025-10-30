@@ -1,0 +1,13 @@
+---
+layout: base.html
+title: Key Features
+---
+
+<section id="key-features" class="mt-5">
+    <h2 class="text-center mb-4">Key Features</h2>
+    <div class="row">
+        {% for feature in collections.keyFeatures | sort(false, false, 'data.order') %}
+            {% include "key-feature-card.html" %}
+        {% endfor %}
+    </div>
+</section>

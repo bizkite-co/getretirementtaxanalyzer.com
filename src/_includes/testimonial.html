@@ -1,0 +1,18 @@
+<div class="col-md-6 mb-4">
+    <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+            <div class="card-text flex-grow-1">{{ testimonial.content | safe }}</div>
+            <footer class="blockquote-footer mt-3">
+                <cite>{{ testimonial.data.name }}</cite><br>
+                {{ testimonial.data.title }}, {{ testimonial.data.company }}
+                {% if testimonial.data.linkedIn %}
+                <a href="{{ testimonial.data.linkedIn }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542V13.394h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.207.016-.413.08-.559.173-.386.582-.74 1.213-.74.886 0 1.213.66 1.213 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025H8.516S8.91 6.001 8.91 6.001A3.5 3.5 0 0 0 8 5.99c-1.566 0-2.013 1.12-2.013 2.35v5.044h2.401z"/>
+                    </svg>
+                </a>
+                {% endif %}
+            </footer>
+        </div>
+    </div>
+</div>

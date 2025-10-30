@@ -14,3 +14,5 @@ node_modules/
 .aider.chat.history.md
 .aider.env
 .aider.input.history
+
+logs/

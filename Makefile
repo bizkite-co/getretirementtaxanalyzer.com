@@ -10,7 +10,7 @@ help: ## Display this help screen
 # ==============================================================================
 
 build: build-css ## Build the Eleventy site and CSS
-	DEBUG=Eleventy* npx @11ty/eleventy > logs/eleventy.log 2>&1 > logs/eleventy.log 2>&1
+	mkdir -p logs && DEBUG=Eleventy* npx @11ty/eleventy
 
 build-css: ## Compile CSS with PostCSS and Tailwind
 	npx postcss-cli src/style.css -o _site/style.css

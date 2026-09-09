@@ -1,53 +1,68 @@
 ---
 layout: base.html
-title: The Roadmap - Retirement Spend-Down Table Application
+title: Get The Roadmap - Turnkey Retirement Spend-Down Table
 ---
 
 <section id="what-is-roadmap" class="row">
-    <div class="col-md-3">
-        {%- markdown -%}
-            {%- include "what-is-roadmap.md" -%}
-        {%- endmarkdown -%}
-        <a href="/features" class="btn btn-secondary">Learn More About Features</a>
+  <div class="col-md-3">
+    {%- markdown -%} {%- include "what-is-roadmap.md" -%} {%- endmarkdown -%}
+    <a href="/features" class="btn btn-secondary">Learn More About Features</a>
+  </div>
+  <div class="col-md-9">
+    <div
+      id="value-proposition"
+      class="bg-blue-200 border-2 border-blue-300 p-1 rounded-md text-blue-700 text-center italic font-bold"
+    >
+      See the spend-down run out.
     </div>
-    <div class="col-md-9">
-         <div id="value-proposition" class="bg-blue-200 border-2 border-blue-300 p-1 rounded-md text-blue-700 text-center italic font-bold">See the spend-down run out.</div>
-        {% 
-            image "src/assets/test-user-100k-strategy1.png", 
-            "Screenshot of The Roadmap application showing a 100k strategy", 
-            [300, 600, 900], 
-            "(min-width: 600px) 600px, 100vw" 
-        %}
-    </div>
+    {% image "src/assets/test-user-100k-strategy1.png", "Screenshot of The
+    Roadmap application showing a 100k strategy", [300, 600, 900], "(min-width:
+    600px) 600px, 100vw" %}
+  </div>
 </section>
 
 <section id="show-the-value" class="mt-5 bg-light rounded">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h2>Current users show this to <i>every</i> client</h2>
-        </div>
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h2>Current users show this to <i>every</i> client</h2>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            {% image "src/assets/spend-down-headers.png", "Retirement Spend Down Strategies", null, "100vw" %}
-        </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      {% image "src/assets/spend-down-headers.png", "Retirement Spend Down
+      Strategies", null, "100vw" %}
     </div>
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <p class="lead">Show your client the details of the best case spend-down scenario of their current plan.</p>
-            <p>The Roadmap's unique value proposition lies in its specific focus on generating a comprehensive and detailed 30+ year retirement spend-down table that seamlessly integrates all the critical components of retirement income. This level of detail and integration, particularly in a table format, could offer a significant advantage for advisors who need to clearly illustrate income sustainability and asset depletion over extended retirement periods to their clients.</p>
-        </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <p class="lead">
+        Show your client the details of the best case spend-down scenario of
+        their current plan.
+      </p>
+      <p>
+        The Roadmap's unique value proposition lies in its specific focus on
+        generating a comprehensive and detailed 30+ year retirement spend-down
+        table that seamlessly integrates all the critical components of
+        retirement income. This level of detail and integration, particularly in
+        a table format, could offer a significant advantage for advisors who
+        need to clearly illustrate income sustainability and asset depletion
+        over extended retirement periods to their clients.
+      </p>
     </div>
+  </div>
 </section>
 
 {% include "key-features-section.html" %}
 
 <section id="testimonials-section" class="mt-5">
-    {% include "testimonials.html" %}
+  {% include "testimonials.html" %}
 </section>
 
 <section id="final-cta" class="text-center mt-5 p-5 bg-dark text-white">
-    <h2>Ready to build trust and enhance client communication?</h2>
-    <p class="lead">Start using The Roadmap today to provide your clients with the clear, long-term retirement income projections they need.</p>
-    <a href="/signup" class="btn btn-primary btn-lg">Sign Up Now</a>
+  <h2>Ready to build trust and enhance client communication?</h2>
+  <p class="lead">
+    Start using The Roadmap today to provide your clients with the clear,
+    long-term retirement income projections they need.
+  </p>
+  <a href="/signup" class="btn btn-primary btn-lg">Sign Up Now</a>
 </section>

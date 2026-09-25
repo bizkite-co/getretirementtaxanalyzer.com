@@ -59,11 +59,30 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-white fs-4" href="/">Retirement Tax Analyzer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link text-light px-3" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-light px-3" href="/features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link text-light px-3" href="/testimonials/">Testimonials</a></li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0"><a class="btn btn-primary btn-sm px-3" href="/signup">Free Trial</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <header class="bg-dark text-white text-center p-5">
         <div class="container">
-                <h1>Get More Clients with this <i>Simple</i> Tool</h1>
-            <p class="lead">The ultimate retirement spend-down table application for financial professionals.</p>
-            <a href="/signup" class="btn btn-primary btn-lg">Get Started for Free</a>
+            <h1>{{ header_title or 'Get More Clients with this <i>Simple</i> Tool' | safe }}</h1>
+            <p class="lead">{{ header_lead or 'The ultimate retirement spend-down table application for financial professionals.' }}</p>
+            {% if not hide_header_cta %}
+            <a href="{{ header_cta_link or '/signup' }}" class="btn btn-primary btn-lg">{{ header_cta_text or 'Get Started for Free' }}</a>
+            {% endif %}
         </div>
     </header>
 
@@ -71,8 +90,16 @@
         {{ content | safe }}
     </main>
 
-    <footer class="text-center p-3 mt-5">
-        <p>&copy; 2025 The Roadmap. All rights reserved.</p>
+    <footer class="text-center p-4 mt-5 bg-light border-top">
+        <div class="container">
+            <p class="mb-1 text-muted">&copy; 2026 The Roadmap. All rights reserved.</p>
+            <p class="small text-muted mb-0">
+                <a href="/" class="text-secondary text-decoration-none me-3">Home</a>
+                <a href="/features" class="text-secondary text-decoration-none me-3">Features</a>
+                <a href="/testimonials/" class="text-secondary text-decoration-none me-3">Testimonials &amp; Feedback</a>
+                <a href="/signup" class="text-secondary text-decoration-none">Sign Up</a>
+            </p>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

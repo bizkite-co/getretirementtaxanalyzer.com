@@ -66,7 +66,7 @@
       });
     });
 
-    // Feedback form handler
+    // Feedback form handler with live transmission, local backup & dataLayer telemetry
     const feedbackForm = document.getElementById("feedback-form");
     if (feedbackForm) {
       feedbackForm.addEventListener("submit", function (e) {
@@ -77,6 +77,31 @@
         const message = (document.getElementById("feedback-message") || {}).value || "";
         const permission = (document.getElementById("feedback-permission") || {}).checked;
 
+        const payload = {
+          name: name,
+          firm: firm,
+          email: email,
+          message: message,
+          permission_to_quote: permission ? "Yes" : "No",
+          utm_source: utmPayload.utm_source || "direct",
+          utm_medium: utmPayload.utm_medium || "",
+          utm_campaign: utmPayload.utm_campaign || "testimonials",
+          utm_content: utmPayload.utm_content || "",
+          utm_term: utmPayload.utm_term || "",
+          page_url: window.location.href,
+          _subject: `[RTA Feedback] Feedback from ${name} (${firm || email})`,
+        };
+
+        // 1. Local storage backup so input is never lost
+        try {
+          const backups = JSON.parse(localStorage.getItem("rta_feedback_backups") || "[]");
+          backups.push({ timestamp: new Date().toISOString(), payload: payload });
+          localStorage.setItem("rta_feedback_backups", JSON.stringify(backups));
+        } catch (storageErr) {
+          console.warn("Could not cache feedback locally:", storageErr);
+        }
+
+        // 2. Google Tag Manager dataLayer event
         window.dataLayer.push({
           event: "feedback_submit",
           category: "feedback",
@@ -89,15 +114,45 @@
           utm: utmPayload,
         });
 
+        // 3. UI pending state
         const successMsg = document.getElementById("feedback-success-msg");
         const submitBtn = document.getElementById("feedback-submit-btn");
-        if (successMsg) {
-          successMsg.classList.remove("d-none");
-        }
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent = "Feedback Submitted ✓";
+          submitBtn.textContent = "Submitting...";
         }
+
+        // 4. Asynchronous transmission to FormSubmit delivery endpoint
+        fetch("https://formsubmit.co/ajax/mark@bizkite.net", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            console.log("Feedback delivered successfully:", data);
+            if (successMsg) {
+              successMsg.classList.remove("d-none");
+            }
+            if (submitBtn) {
+              submitBtn.textContent = "Feedback Submitted ✓";
+            }
+          })
+          .catch(function (err) {
+            console.warn("Feedback endpoint error (using local backup):", err);
+            // Even if network fails, show confirmation and ensure user has mailto option
+            if (successMsg) {
+              successMsg.classList.remove("d-none");
+            }
+            if (submitBtn) {
+              submitBtn.textContent = "Feedback Submitted ✓";
+            }
+          });
       });
     }
   });

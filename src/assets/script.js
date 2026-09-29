@@ -4,6 +4,13 @@
 (function () {
   "use strict";
 
+  // Google Apps Script Web App /exec URL (Sheet-backed, owned by
+  // bizkitellc@gmail.com) - replaces formsubmit.co, which nobody here has
+  // an account with and which returned HTTP 500 for every submission
+  // (confirmed - still 500 even after activating the account). Fill this
+  // in after deploying apps_script/Code.gs as a Web App.
+  var FEEDBACK_ENDPOINT = "REPLACE_WITH_APPS_SCRIPT_EXEC_URL";
+
   window.dataLayer = window.dataLayer || [];
 
   function getQueryParams() {
@@ -89,7 +96,6 @@
           utm_content: utmPayload.utm_content || "",
           utm_term: utmPayload.utm_term || "",
           page_url: window.location.href,
-          _subject: `[RTA Feedback] Feedback from ${name} (${firm || email})`,
         };
 
         // 1. Local storage backup so input is never lost
@@ -116,25 +122,75 @@
 
         // 3. UI pending state
         const successMsg = document.getElementById("feedback-success-msg");
+        const errorMsg = document.getElementById("feedback-error-msg");
+        const mailtoLink = document.getElementById("feedback-mailto-link");
         const submitBtn = document.getElementById("feedback-submit-btn");
+        if (successMsg) successMsg.classList.add("d-none");
+        if (errorMsg) errorMsg.classList.add("d-none");
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.textContent = "Submitting...";
         }
 
-        // 4. Asynchronous transmission to FormSubmit delivery endpoint
-        fetch("https://formsubmit.co/ajax/mark@bizkite.net", {
+        // Pre-fill the "email directly" fallback with the actual message
+        // right away, before we even know if delivery succeeds - if it
+        // fails, the user shouldn't have to retype anything.
+        if (mailtoLink) {
+          const mailtoSubject = `Retirement Tax Analyzer Feedback from ${name || "(no name given)"}`;
+          const mailtoBody = `Firm: ${firm}\nEmail: ${email}\n\n${message}`;
+          mailtoLink.href =
+            "mailto:mark@bizkite.net?subject=" +
+            encodeURIComponent(mailtoSubject) +
+            "&body=" +
+            encodeURIComponent(mailtoBody);
+        }
+
+        function showFailure(reason) {
+          console.error("Feedback delivery FAILED (" + reason + ") - payload was NOT delivered:", payload);
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Feedback";
+          }
+          if (errorMsg) {
+            errorMsg.classList.remove("d-none");
+          }
+        }
+
+        // 4. Asynchronous transmission to our own Apps Script Web App
+        // (Sheet-backed - see apps_script/Code.gs). Content-Type is
+        // deliberately "text/plain" rather than "application/json": Apps
+        // Script Web Apps don't implement a doOptions() CORS-preflight
+        // handler, so an "application/json" fetch (a "non-simple"
+        // request per the CORS spec) would fail the preflight before the
+        // real POST is ever sent. "text/plain" is a "simple request" and
+        // skips preflight entirely; doPost() still JSON.parses the body
+        // itself regardless of the declared content type.
+        //
+        // IMPORTANT: fetch() only rejects on network failure - an HTTP
+        // error status (4xx/5xx) with a valid JSON body still resolves
+        // the promise chain "successfully" unless res.ok is checked
+        // explicitly. A prior version of this handler (when this posted
+        // to formsubmit.co) skipped that check and showed "Feedback
+        // Submitted ✓" on every submission regardless of whether delivery
+        // actually succeeded - including on real 500 errors. Never repeat
+        // that: only the .then(res.ok) branch may claim success.
+        fetch(FEEDBACK_ENDPOINT, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
+            "Content-Type": "text/plain;charset=utf-8",
           },
           body: JSON.stringify(payload),
         })
           .then(function (res) {
+            if (!res.ok) {
+              throw new Error("Feedback endpoint returned HTTP " + res.status);
+            }
             return res.json();
           })
           .then(function (data) {
+            if (!data || data.success !== true) {
+              throw new Error("Feedback endpoint reported failure: " + JSON.stringify(data));
+            }
             console.log("Feedback delivered successfully:", data);
             if (successMsg) {
               successMsg.classList.remove("d-none");
@@ -144,14 +200,7 @@
             }
           })
           .catch(function (err) {
-            console.warn("Feedback endpoint error (using local backup):", err);
-            // Even if network fails, show confirmation and ensure user has mailto option
-            if (successMsg) {
-              successMsg.classList.remove("d-none");
-            }
-            if (submitBtn) {
-              submitBtn.textContent = "Feedback Submitted ✓";
-            }
+            showFailure(err && err.message ? err.message : "network error");
           });
       });
     }

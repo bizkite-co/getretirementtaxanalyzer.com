@@ -3,23 +3,36 @@ layout: base.html
 title: Sign Up for The Roadmap
 ---
 
-<section id="signup-form">
+<section id="signup-section">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <form>
+            <!--
+              This is the general lead-capture form (people we haven't
+              emailed yet) - no password, no account created here. Mark
+              asked for a distinct 30-day-trial form (with real
+              explanation + password) for people we HAVE already
+              emailed; that's tracked separately and not built yet.
+              A submission here just notifies Mark to call back - see
+              cdk_scraper_deployment/testimonials_stack.py's FormIntakeStack,
+              reused for this queue as "signups".
+            -->
+            <form id="signup-form">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="name" required>
+                    <label for="signup-name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="signup-name" required>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" required>
+                    <label for="signup-email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="signup-email" required>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" required>
+                <button type="submit" id="signup-submit-btn" class="btn btn-primary">Request a Callback</button>
+                <div id="signup-success-msg" class="alert alert-success mt-3 d-none" role="alert">
+                    <strong>Thanks!</strong> We've got your info and will reach out shortly.
                 </div>
-                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <div id="signup-error-msg" class="alert alert-danger mt-3 d-none" role="alert">
+                    <strong>Sorry, that didn't go through.</strong> Please try again, or email
+                    <a href="mailto:mark@bizkite.net">mark@bizkite.net</a> directly.
+                </div>
             </form>
         </div>
     </div>

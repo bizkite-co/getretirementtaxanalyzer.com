@@ -233,14 +233,16 @@
         // visitor's own browser.
         const backupIndex = saveBackup(payload);
 
-        // Google Tag Manager dataLayer event
+        // Google Tag Manager dataLayer event. GA4 must never receive PII
+        // (name/email/message) in event parameters - this previously sent
+        // feedback_name/feedback_firm/feedback_email directly; fixed to
+        // keep only non-identifying signals. The actual name/email/message
+        // still go to the S3-backed Lambda above, which is fine - that's
+        // our own infrastructure, not a third-party analytics vendor.
         window.dataLayer.push({
           event: "feedback_submit",
           category: "feedback",
           action: "submit",
-          feedback_name: name,
-          feedback_firm: firm,
-          feedback_email: email,
           feedback_permission: permission,
           message_length: message.length,
           utm: utmPayload,
@@ -293,6 +295,85 @@
             if (errorMsg) {
               errorMsg.classList.remove("d-none");
             }
+          });
+      });
+    }
+
+    // General signup ("request a callback") form - lead capture only, no
+    // password/account creation. See src/signup.html for why: this is the
+    // "haven't emailed them yet" audience Mark wants a callback
+    // notification for, distinct from a future 30-day-trial signup form
+    // for people already emailed.
+    const signupForm = document.getElementById("signup-form");
+    if (signupForm) {
+      // CocliSignupsStack-roadmap's Lambda Function URL (deployed
+      // 2026-09-30) - see cdk_scraper_deployment/testimonials_stack.py's
+      // FormIntakeStack, reused here for the "signups" queue.
+      var SIGNUP_ENDPOINT = "https://j4ase7uaisfod3mrran22do7pm0ftokg.lambda-url.us-east-1.on.aws/";
+
+      signupForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const name = (document.getElementById("signup-name") || {}).value || "";
+        const email = (document.getElementById("signup-email") || {}).value || "";
+
+        const payload = {
+          name: name,
+          email: email,
+          utm_source: utmPayload.utm_source || "direct",
+          utm_medium: utmPayload.utm_medium || "",
+          utm_campaign: utmPayload.utm_campaign || "signup",
+          utm_content: utmPayload.utm_content || "",
+          utm_term: utmPayload.utm_term || "",
+          page_url: window.location.href,
+        };
+
+        // GA4 must never receive PII - no name/email here, only that a
+        // signup happened and its UTM context (see the feedback_submit
+        // fix above for the same rule). name/email go only to our own S3
+        // queue via SIGNUP_ENDPOINT below.
+        window.dataLayer.push({
+          event: "signup_submit",
+          category: "conversion",
+          action: "submit",
+          form_type: "signup",
+          utm: utmPayload,
+        });
+
+        const successMsg = document.getElementById("signup-success-msg");
+        const errorMsg = document.getElementById("signup-error-msg");
+        const submitBtn = document.getElementById("signup-submit-btn");
+        if (successMsg) successMsg.classList.add("d-none");
+        if (errorMsg) errorMsg.classList.add("d-none");
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Submitting...";
+        }
+
+        fetch(SIGNUP_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              throw new Error("Signup endpoint returned HTTP " + res.status);
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data || data.success !== true) {
+              throw new Error("Signup endpoint reported failure: " + JSON.stringify(data));
+            }
+            if (successMsg) successMsg.classList.remove("d-none");
+            if (submitBtn) submitBtn.textContent = "Request Sent ✓";
+          })
+          .catch(function (err) {
+            console.error("Signup delivery FAILED (" + (err && err.message) + ") - payload was NOT delivered:", payload);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Request a Callback";
+            }
+            if (errorMsg) errorMsg.classList.remove("d-none");
           });
       });
     }

@@ -4,12 +4,18 @@
 (function () {
   "use strict";
 
-  // Google Apps Script Web App /exec URL (Sheet-backed, owned by
-  // bizkitellc@gmail.com) - replaces formsubmit.co, which nobody here has
-  // an account with and which returned HTTP 500 for every submission
-  // (confirmed - still 500 even after activating the account). Fill this
-  // in after deploying apps_script/Code.gs as a Web App.
-  var FEEDBACK_ENDPOINT = "REPLACE_WITH_APPS_SCRIPT_EXEC_URL";
+  // AWS Lambda Function URL (S3-backed queue, cdk_scraper_deployment/
+  // cdk_scraper_deployment/testimonials_stack.py in the company-cli repo)
+  // - replaces formsubmit.co, which nobody here has an account with and
+  // which returned HTTP 500 for every submission (confirmed - still 500
+  // even after activating the account, with a broken activation flow and
+  // no login to review history). Writes one JSON file per submission to
+  // campaigns/roadmap/queues/testimonials/pending/ in the campaign's S3
+  // data bucket - the same USV/S3 queue convention the rest of this data
+  // stack already uses, not a database. `cocli telemetry
+  // process-testimonials` turns each into an engagement-log entry and a
+  // company note with the full message.
+  var FEEDBACK_ENDPOINT = "https://6jvd5zwhva6oflv2cgdel23ode0wrnyp.lambda-url.us-east-1.on.aws/";
 
   window.dataLayer = window.dataLayer || [];
 
@@ -156,15 +162,14 @@
           }
         }
 
-        // 4. Asynchronous transmission to our own Apps Script Web App
-        // (Sheet-backed - see apps_script/Code.gs). Content-Type is
-        // deliberately "text/plain" rather than "application/json": Apps
-        // Script Web Apps don't implement a doOptions() CORS-preflight
-        // handler, so an "application/json" fetch (a "non-simple"
-        // request per the CORS spec) would fail the preflight before the
-        // real POST is ever sent. "text/plain" is a "simple request" and
-        // skips preflight entirely; doPost() still JSON.parses the body
-        // itself regardless of the declared content type.
+        // 4. Asynchronous transmission to our own Lambda Function URL
+        // (S3 queue-backed - see cdk_scraper_deployment/
+        // testimonials_stack.py). Lambda Function URLs handle the CORS
+        // preflight (OPTIONS) natively when configured with `cors=...`
+        // in CDK, so a plain "application/json" fetch works fine here -
+        // unlike a raw Apps Script Web App, which has no preflight
+        // handler at all (that constraint no longer applies to this
+        // endpoint; don't reintroduce the text/plain workaround).
         //
         // IMPORTANT: fetch() only rejects on network failure - an HTTP
         // error status (4xx/5xx) with a valid JSON body still resolves
@@ -177,7 +182,7 @@
         fetch(FEEDBACK_ENDPOINT, {
           method: "POST",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         })

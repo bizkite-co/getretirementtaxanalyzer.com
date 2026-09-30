@@ -82,6 +82,45 @@
     // Feedback form handler with live transmission, local backup & dataLayer telemetry
     const feedbackForm = document.getElementById("feedback-form");
     if (feedbackForm) {
+      // Recover an undelivered submission from a previous visit, if any -
+      // pre-fills the form so nothing has to be retyped, and shows a
+      // banner so the visitor knows why it's already filled in and gets
+      // to review before re-sending (deliberately not auto-submitted).
+      (function restoreUndeliveredFeedback() {
+        let backups;
+        try {
+          backups = JSON.parse(localStorage.getItem("rta_feedback_backups") || "[]");
+        } catch (e) {
+          return;
+        }
+        let pending = null;
+        for (let i = backups.length - 1; i >= 0; i--) {
+          if (backups[i] && backups[i].delivered === false) {
+            pending = backups[i];
+            break;
+          }
+        }
+        if (!pending) return;
+
+        const nameEl = document.getElementById("feedback-name");
+        const firmEl = document.getElementById("feedback-firm");
+        const emailEl = document.getElementById("feedback-email");
+        const messageEl = document.getElementById("feedback-message");
+        if (nameEl) nameEl.value = pending.payload.name || "";
+        if (firmEl) firmEl.value = pending.payload.firm || "";
+        if (emailEl) emailEl.value = pending.payload.email || "";
+        if (messageEl) messageEl.value = pending.payload.message || "";
+
+        const banner = document.createElement("div");
+        banner.id = "feedback-recovery-banner";
+        banner.className = "alert alert-warning mt-3";
+        const when = new Date(pending.timestamp).toLocaleString();
+        banner.textContent =
+          "We found feedback you wrote on " + when + " that didn't finish sending. " +
+          "We've filled it back in below - just click Submit Feedback again to send it.";
+        feedbackForm.parentNode.insertBefore(banner, feedbackForm);
+      })();
+
       feedbackForm.addEventListener("submit", function (e) {
         e.preventDefault();
         const name = (document.getElementById("feedback-name") || {}).value || "";
@@ -104,13 +143,51 @@
           page_url: window.location.href,
         };
 
-        // 1. Local storage backup so input is never lost
+        // 1. Local storage backup so input is never lost. Tagged
+        // delivered:false up front and flipped to true only after a
+        // confirmed successful response below - this is what lets
+        // restoreUndeliveredFeedback() (below) find and offer to
+        // re-send anything that didn't actually make it, the next time
+        // this page loads. This is real: every version of this handler,
+        // including the one that posted to the (confirmed broken)
+        // formsubmit.co endpoint, has always written here first, before
+        // attempting delivery - so submissions from before this endpoint
+        // was fixed may still be sitting in a visitor's own browser.
+        var backupIndex = -1;
         try {
           const backups = JSON.parse(localStorage.getItem("rta_feedback_backups") || "[]");
-          backups.push({ timestamp: new Date().toISOString(), payload: payload });
+          backups.push({
+            timestamp: new Date().toISOString(),
+            payload: payload,
+            delivered: false,
+          });
+          backupIndex = backups.length - 1;
           localStorage.setItem("rta_feedback_backups", JSON.stringify(backups));
         } catch (storageErr) {
           console.warn("Could not cache feedback locally:", storageErr);
+        }
+
+        function markBackupDelivered() {
+          if (backupIndex < 0) return;
+          try {
+            const backups = JSON.parse(localStorage.getItem("rta_feedback_backups") || "[]");
+            if (backups[backupIndex]) {
+              // Mark every OLDER entry delivered too, not just this one -
+              // a successful submission (whether a fresh one or a
+              // recovery resubmit) supersedes anything earlier that never
+              // went through. Without this, an old failed attempt from
+              // before a later successful one would still match
+              // restoreUndeliveredFeedback()'s scan on a future visit and
+              // resurface a stale recovery banner for a draft that's
+              // already been superseded.
+              for (let i = 0; i <= backupIndex; i++) {
+                if (backups[i]) backups[i].delivered = true;
+              }
+              localStorage.setItem("rta_feedback_backups", JSON.stringify(backups));
+            }
+          } catch (storageErr) {
+            console.warn("Could not update local feedback backup:", storageErr);
+          }
         }
 
         // 2. Google Tag Manager dataLayer event
@@ -197,6 +274,9 @@
               throw new Error("Feedback endpoint reported failure: " + JSON.stringify(data));
             }
             console.log("Feedback delivered successfully:", data);
+            markBackupDelivered();
+            const recoveryBanner = document.getElementById("feedback-recovery-banner");
+            if (recoveryBanner) recoveryBanner.remove();
             if (successMsg) {
               successMsg.classList.remove("d-none");
             }

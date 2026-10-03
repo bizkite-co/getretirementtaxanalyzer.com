@@ -1,0 +1,39 @@
+---
+layout: base.html
+title: Unsubscribe
+---
+
+<section id="unsubscribe-section">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <!--
+              Replaces a bare https://.../unsubscribe link that had no
+              backing page at all (a flat 404) and, even if it had
+              existed, no identifying info - every outbound email now
+              carries a per-send token (?t=...) in this link (see
+              cocli/models/send_record.py / cocli/utils/send_tracking.py
+              in the company-cli repo), so this page needs exactly one
+              click and zero typing - no re-entering an email that might
+              not even match what we have on file.
+            -->
+            <h1 class="h3 mb-3">Unsubscribe</h1>
+            <div id="unsubscribe-no-token" class="d-none">
+                <p>We couldn't find your unsubscribe link's info. Please reply
+                "unsubscribe" to the email you received instead - that always
+                works.</p>
+            </div>
+            <div id="unsubscribe-confirm">
+                <p>Click below to stop receiving future emails from us.</p>
+                <button type="button" id="unsubscribe-confirm-btn" class="btn btn-outline-danger">Confirm Unsubscribe</button>
+            </div>
+            <div id="unsubscribe-success-msg" class="alert alert-success mt-3 d-none" role="alert">
+                <strong>Done.</strong> You won't receive future emails from this list.
+            </div>
+            <div id="unsubscribe-error-msg" class="alert alert-danger mt-3 d-none" role="alert">
+                <strong>Sorry, that didn't go through.</strong> Please reply
+                "unsubscribe" to the email you received instead, or email
+                <a href="mailto:mark@bizkite.net">mark@bizkite.net</a> directly.
+            </div>
+        </div>
+    </div>
+</section>

@@ -377,5 +377,59 @@
           });
       });
     }
+
+    // Unsubscribe - one click, zero typing. The per-send token every
+    // outbound email's links now carry (?t=...) is the only identifier
+    // this ever needs; there's no form field to re-enter an email that
+    // might not even match what we have on file (Mark, 2026-10-03: "they
+    // shouldn't have to reenter any information").
+    const unsubscribeConfirmBtn = document.getElementById("unsubscribe-confirm-btn");
+    if (unsubscribeConfirmBtn) {
+      var UNSUBSCRIBE_ENDPOINT = "https://REPLACE-AFTER-CDK-DEPLOY.lambda-url.us-east-1.on.aws/";
+
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("t");
+
+      const confirmSection = document.getElementById("unsubscribe-confirm");
+      const noTokenSection = document.getElementById("unsubscribe-no-token");
+      const successMsg = document.getElementById("unsubscribe-success-msg");
+      const errorMsg = document.getElementById("unsubscribe-error-msg");
+
+      if (!token) {
+        if (confirmSection) confirmSection.classList.add("d-none");
+        if (noTokenSection) noTokenSection.classList.remove("d-none");
+      } else {
+        unsubscribeConfirmBtn.addEventListener("click", function () {
+          unsubscribeConfirmBtn.disabled = true;
+          unsubscribeConfirmBtn.textContent = "Unsubscribing...";
+          if (errorMsg) errorMsg.classList.add("d-none");
+
+          fetch(UNSUBSCRIBE_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ guid: token, reason: "", page_url: window.location.href }),
+          })
+            .then(function (res) {
+              if (!res.ok) {
+                throw new Error("Unsubscribe endpoint returned HTTP " + res.status);
+              }
+              return res.json();
+            })
+            .then(function (data) {
+              if (!data || data.success !== true) {
+                throw new Error("Unsubscribe endpoint reported failure: " + JSON.stringify(data));
+              }
+              if (confirmSection) confirmSection.classList.add("d-none");
+              if (successMsg) successMsg.classList.remove("d-none");
+            })
+            .catch(function (err) {
+              console.error("Unsubscribe FAILED (" + (err && err.message) + "):", token);
+              unsubscribeConfirmBtn.disabled = false;
+              unsubscribeConfirmBtn.textContent = "Confirm Unsubscribe";
+              if (errorMsg) errorMsg.classList.remove("d-none");
+            });
+        });
+      }
+    }
   });
 })();

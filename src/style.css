@@ -23,3 +23,37 @@ body {
     background-color: #e9ecef;
     border-radius: .25rem;
 }
+
+/*
+ * Brand colors matched to roadmap-website (TheRoadmap(tm)) / roadmappartners.net
+ * (see src/main/webapp/css/prs.css and src/main/webapp/images/roadmap-logo.png there)
+ * so visitors who already know the app recognize this as the same product:
+ *   - navy  #19225b: dominant brand color (nav, header, footer bands, links)
+ *   - gold  #eeb71c: accent color used for the logo swoosh and highlighted
+ *     values/CTAs in the app itself
+ */
+:root {
+    --bs-primary: #19225b;
+    --bs-primary-rgb: 25, 34, 91;
+    --bs-dark-rgb: 25, 34, 91;
+    --bs-black-rgb: 25, 34, 91;
+    --brand-gold: #eeb71c;
+    --brand-gold-hover: #d9a615;
+    --brand-gold-active: #c79510;
+}
+
+.btn-primary {
+    --bs-btn-color: #19225b;
+    --bs-btn-bg: var(--brand-gold);
+    --bs-btn-border-color: var(--brand-gold);
+    --bs-btn-hover-color: #19225b;
+    --bs-btn-hover-bg: var(--brand-gold-hover);
+    --bs-btn-hover-border-color: var(--brand-gold-hover);
+    --bs-btn-active-color: #19225b;
+    --bs-btn-active-bg: var(--brand-gold-active);
+    --bs-btn-active-border-color: var(--brand-gold-active);
+    --bs-btn-disabled-color: #19225b;
+    --bs-btn-disabled-bg: var(--brand-gold);
+    --bs-btn-disabled-border-color: var(--brand-gold);
+    font-weight: 600;
+}

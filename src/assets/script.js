@@ -385,7 +385,7 @@
     // shouldn't have to reenter any information").
     const unsubscribeConfirmBtn = document.getElementById("unsubscribe-confirm-btn");
     if (unsubscribeConfirmBtn) {
-      var UNSUBSCRIBE_ENDPOINT = "https://REPLACE-AFTER-CDK-DEPLOY.lambda-url.us-east-1.on.aws/";
+      var UNSUBSCRIBE_ENDPOINT = "https://m4xte3okn2bfbb4jtzvkv4kniu0ohkta.lambda-url.us-east-1.on.aws/";
 
       const params = new URLSearchParams(window.location.search);
       const token = params.get("t");

@@ -3,25 +3,28 @@
 @tailwind utilities;
 
 h1 {
-    @apply text-4xl font-bold mb-4;
+  @apply text-4xl font-bold mb-4;
 }
 
 h2 {
-    @apply text-3xl font-bold mb-3;
+  @apply text-3xl font-bold mb-3;
 }
 
 h3 {
-    @apply text-2xl font-bold mb-2;
+  @apply text-2xl font-bold mb-2;
 }
 
+p {
+  padding-bottom: 1em;
+}
 
 body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .placeholder {
-    background-color: #e9ecef;
-    border-radius: .25rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
 }
 
 /*
@@ -33,27 +36,27 @@ body {
  *     values/CTAs in the app itself
  */
 :root {
-    --bs-primary: #19225b;
-    --bs-primary-rgb: 25, 34, 91;
-    --bs-dark-rgb: 25, 34, 91;
-    --bs-black-rgb: 25, 34, 91;
-    --brand-gold: #eeb71c;
-    --brand-gold-hover: #d9a615;
-    --brand-gold-active: #c79510;
+  --bs-primary: #19225b;
+  --bs-primary-rgb: 25, 34, 91;
+  --bs-dark-rgb: 25, 34, 91;
+  --bs-black-rgb: 25, 34, 91;
+  --brand-gold: #eeb71c;
+  --brand-gold-hover: #d9a615;
+  --brand-gold-active: #c79510;
 }
 
 .btn-primary {
-    --bs-btn-color: #19225b;
-    --bs-btn-bg: var(--brand-gold);
-    --bs-btn-border-color: var(--brand-gold);
-    --bs-btn-hover-color: #19225b;
-    --bs-btn-hover-bg: var(--brand-gold-hover);
-    --bs-btn-hover-border-color: var(--brand-gold-hover);
-    --bs-btn-active-color: #19225b;
-    --bs-btn-active-bg: var(--brand-gold-active);
-    --bs-btn-active-border-color: var(--brand-gold-active);
-    --bs-btn-disabled-color: #19225b;
-    --bs-btn-disabled-bg: var(--brand-gold);
-    --bs-btn-disabled-border-color: var(--brand-gold);
-    font-weight: 600;
+  --bs-btn-color: #19225b;
+  --bs-btn-bg: var(--brand-gold);
+  --bs-btn-border-color: var(--brand-gold);
+  --bs-btn-hover-color: #19225b;
+  --bs-btn-hover-bg: var(--brand-gold-hover);
+  --bs-btn-hover-border-color: var(--brand-gold-hover);
+  --bs-btn-active-color: #19225b;
+  --bs-btn-active-bg: var(--brand-gold-active);
+  --bs-btn-active-border-color: var(--brand-gold-active);
+  --bs-btn-disabled-color: #19225b;
+  --bs-btn-disabled-bg: var(--brand-gold);
+  --bs-btn-disabled-border-color: var(--brand-gold);
+  font-weight: 600;
 }

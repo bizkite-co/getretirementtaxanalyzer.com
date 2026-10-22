@@ -19,6 +19,31 @@
 
   window.dataLayer = window.dataLayer || [];
 
+  // Global runtime error telemetry to detect issues on landing and testimonial pages
+  window.addEventListener("error", function (e) {
+    window.dataLayer.push({
+      event: "client_error",
+      category: "error",
+      action: "javascript_error",
+      error_message: e.message || "Unknown error",
+      error_source: e.filename || "",
+      error_lineno: e.lineno || 0,
+      page_path: window.location.pathname,
+      utm: (typeof utmPayload !== "undefined") ? utmPayload : {},
+    });
+  });
+
+  window.addEventListener("unhandledrejection", function (e) {
+    window.dataLayer.push({
+      event: "client_error",
+      category: "error",
+      action: "unhandled_promise_rejection",
+      error_message: (e.reason && (e.reason.message || String(e.reason))) || "Unknown rejection",
+      page_path: window.location.pathname,
+      utm: (typeof utmPayload !== "undefined") ? utmPayload : {},
+    });
+  });
+
   function getQueryParams() {
     const params = {};
     const search = window.location.search.substring(1);
@@ -66,11 +91,14 @@
         const isCall = href.startsWith("tel:");
         const isMail = href.startsWith("mailto:");
 
+        const fallbackLabel = isCall ? "phone_call" : isMail ? "email_inquiry" : (isSignUp ? "start_free_trial" : "learn_more");
         window.dataLayer.push({
           event: isCall ? "phone_click" : isMail ? "email_click" : "cta_click",
           category: "conversion",
           action: "click",
-          label: isCall ? "phone_call" : isMail ? "email_inquiry" : (isSignUp ? "start_free_trial" : "learn_more"),
+          label: fallbackLabel,
+          cta_label: text || fallbackLabel,
+          button_label: text || fallbackLabel,
           commitment_type: isCall || isMail ? "contact" : (isSignUp ? "micro" : "navigation"),
           target_url: href,
           button_text: text,
@@ -149,6 +177,16 @@
             throw new Error("Feedback endpoint reported failure: " + JSON.stringify(data));
           }
           return data;
+        }).catch(function (err) {
+          window.dataLayer.push({
+            event: "form_error",
+            category: "error",
+            action: "feedback_delivery_failed",
+            error_message: (err && err.message) || "Delivery failed",
+            page_path: window.location.pathname,
+            utm: utmPayload,
+          });
+          throw err;
         });
       }
 
@@ -369,6 +407,14 @@
           })
           .catch(function (err) {
             console.error("Signup delivery FAILED (" + (err && err.message) + ") - payload was NOT delivered:", payload);
+            window.dataLayer.push({
+              event: "form_error",
+              category: "error",
+              action: "signup_delivery_failed",
+              error_message: (err && err.message) || "Signup failed",
+              page_path: window.location.pathname,
+              utm: utmPayload,
+            });
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.textContent = "Request a Callback";

@@ -1,0 +1,32 @@
+{% set bioUrl = testimonial.data.bio or testimonial.bio %}
+{% set bioLogo = testimonial.data.bio_logo or testimonial.bio_logo or testimonial.data.logo or testimonial.logo %}
+{% set bioBg = testimonial.data.bio_bg or testimonial.bio_bg or testimonial.data.bio_background or testimonial.bio_background or testimonial.data.bg or testimonial.bg %}
+{% set bioAlt = testimonial.data.bio_alt or testimonial.bio_alt or testimonial.data.company or testimonial.company or "Bio" %}
+
+{% if not bioLogo and bioUrl and bioSites %}
+  {% if "higginbotham.com" in bioUrl %}
+    {% set bioLogo = bioSites["higginbotham.com"].logo %}
+    {% set bioBg = bioBg or bioSites["higginbotham.com"].background %}
+    {% set bioAlt = bioSites["higginbotham.com"].name or bioAlt %}
+  {% endif %}
+{% endif %}
+
+{% if not bioLogo and bioUrl %}
+  {% if "higginbotham.com" in bioUrl %}
+    {% set bioLogo = "https://www.higginbotham.com/wp-content/uploads/2021/08/logo-higginbotham-white.svg" %}
+    {% set bioBg = bioBg or "#465f82" %}
+    {% set bioAlt = "Higginbotham" %}
+  {% endif %}
+{% endif %}
+
+{% if bioUrl %}
+<a href="{{ bioUrl }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-inline-flex align-items-center" aria-label="{{ testimonial.data.name or testimonial.name }} {{ bioAlt }} Profile">
+  {% if bioLogo %}
+    <span class="d-inline-flex align-items-center rounded px-2 py-1" style="background-color: {{ bioBg | default('#465f82') }}; height: 26px;">
+      <img src="{{ bioLogo }}" alt="{{ bioAlt }}" style="height: 16px; width: auto; max-width: 110px; display: inline-block; vertical-align: middle;">
+    </span>
+  {% else %}
+    <span class="badge bg-secondary">Bio</span>
+  {% endif %}
+</a>
+{% endif %}

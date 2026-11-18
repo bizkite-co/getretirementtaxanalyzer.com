@@ -26,13 +26,18 @@ title: Get The Roadmap - Turnkey Retirement Spend-Down Table
   <div class="row justify-content-center">
     <div class="col-lg-10">
       <h2 id="product-demo-heading" class="text-center">See The Roadmap in action</h2>
+      <h3 class="h5 text-center mb-3">Want to see what this could mean for your clients?</h3>
+      <div class="row justify-content-center text-start mb-4">
+        <div class="col-lg-6">
+          {% set signup_form_id = "video-signup-form" %}
+          {% set signup_form_location = "above-video" %}
+          {% include "signup-form.html" %}
+        </div>
+      </div>
       <p class="lead text-center">
         See how a few client details become a year-by-year retirement spend-down projection,
         making it easier to spot when an income goal is met or missed.
       </p>
-      {% set signup_form_id = "video-signup-form" %}
-      {% set signup_form_location = "above-video" %}
-      {% include "signup-form.html" %}
       <video
         class="w-100 rounded shadow"
         controls
@@ -93,7 +98,7 @@ title: Get The Roadmap - Turnkey Retirement Spend-Down Table
     long-term retirement income projections they need.
   </p>
   <div class="row justify-content-center text-start">
-    <div class="col-lg-10">
+    <div class="col-lg-6">
       {% set signup_form_id = "footer-signup-form" %}
       {% set signup_form_location = "bottom-cta" %}
       {% include "signup-form.html" %}

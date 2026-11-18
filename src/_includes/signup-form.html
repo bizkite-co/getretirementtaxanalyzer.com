@@ -1,0 +1,24 @@
+<form class="signup-form" id="{{ signup_form_id }}" data-form-location="{{ signup_form_location }}">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-6 col-lg-5">
+      <label for="{{ signup_form_id }}-name" class="form-label">Full Name</label>
+      <input type="text" class="form-control" id="{{ signup_form_id }}-name" name="name" autocomplete="name" required>
+    </div>
+    <div class="col-md-6 col-lg-5">
+      <label for="{{ signup_form_id }}-email" class="form-label">Email address</label>
+      <input type="email" class="form-control" id="{{ signup_form_id }}-email" name="email" autocomplete="email" required>
+    </div>
+    <div class="col-12 col-lg-2 d-grid">
+      <button type="submit" class="btn btn-primary text-nowrap signup-submit-btn">Request a Callback</button>
+    </div>
+    <div class="col-12">
+      <div class="alert alert-success mt-2 mb-0 d-none signup-success-msg" role="status" aria-live="polite">
+        <strong>Thanks!</strong> We've got your info and will reach out shortly.
+      </div>
+      <div class="alert alert-danger mt-2 mb-0 d-none signup-error-msg" role="alert">
+        <strong>Sorry, that didn't go through.</strong> Please try again, or email
+        <a href="mailto:mark@bizkite.net">mark@bizkite.net</a> directly.
+      </div>
+    </div>
+  </div>
+</form>

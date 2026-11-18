@@ -342,85 +342,86 @@
     // "haven't emailed them yet" audience Mark wants a callback
     // notification for, distinct from a future 30-day-trial signup form
     // for people already emailed.
-    const signupForm = document.getElementById("signup-form");
-    if (signupForm) {
+    const signupForms = document.querySelectorAll(".signup-form");
+    if (signupForms.length) {
       // CocliSignupsStack-roadmap's Lambda Function URL (deployed
       // 2026-09-30) - see cdk_scraper_deployment/testimonials_stack.py's
       // FormIntakeStack, reused here for the "signups" queue.
       var SIGNUP_ENDPOINT = "https://j4ase7uaisfod3mrran22do7pm0ftokg.lambda-url.us-east-1.on.aws/";
 
-      signupForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const name = (document.getElementById("signup-name") || {}).value || "";
-        const email = (document.getElementById("signup-email") || {}).value || "";
+      signupForms.forEach(function (signupForm) {
+        signupForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const name = (signupForm.querySelector('[name="name"]') || {}).value || "";
+          const email = (signupForm.querySelector('[name="email"]') || {}).value || "";
 
-        const payload = {
-          name: name,
-          email: email,
-          utm_source: utmPayload.utm_source || "direct",
-          utm_medium: utmPayload.utm_medium || "",
-          utm_campaign: utmPayload.utm_campaign || "signup",
-          utm_content: utmPayload.utm_content || "",
-          utm_term: utmPayload.utm_term || "",
-          page_url: window.location.href,
-        };
+          const payload = {
+            name: name,
+            email: email,
+            utm_source: utmPayload.utm_source || "direct",
+            utm_medium: utmPayload.utm_medium || "",
+            utm_campaign: utmPayload.utm_campaign || "signup",
+            utm_content: utmPayload.utm_content || "",
+            utm_term: utmPayload.utm_term || "",
+            page_url: window.location.href,
+          };
 
-        // GA4 must never receive PII - no name/email here, only that a
-        // signup happened and its UTM context (see the feedback_submit
-        // fix above for the same rule). name/email go only to our own S3
-        // queue via SIGNUP_ENDPOINT below.
-        window.dataLayer.push({
-          event: "signup_submit",
-          category: "conversion",
-          action: "submit",
-          form_type: "signup",
-          utm: utmPayload,
-        });
-
-        const successMsg = document.getElementById("signup-success-msg");
-        const errorMsg = document.getElementById("signup-error-msg");
-        const submitBtn = document.getElementById("signup-submit-btn");
-        if (successMsg) successMsg.classList.add("d-none");
-        if (errorMsg) errorMsg.classList.add("d-none");
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Submitting...";
-        }
-
-        fetch(SIGNUP_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-          .then(function (res) {
-            if (!res.ok) {
-              throw new Error("Signup endpoint returned HTTP " + res.status);
-            }
-            return res.json();
-          })
-          .then(function (data) {
-            if (!data || data.success !== true) {
-              throw new Error("Signup endpoint reported failure: " + JSON.stringify(data));
-            }
-            if (successMsg) successMsg.classList.remove("d-none");
-            if (submitBtn) submitBtn.textContent = "Request Sent ✓";
-          })
-          .catch(function (err) {
-            console.error("Signup delivery FAILED (" + (err && err.message) + ") - payload was NOT delivered:", payload);
-            window.dataLayer.push({
-              event: "form_error",
-              category: "error",
-              action: "signup_delivery_failed",
-              error_message: (err && err.message) || "Signup failed",
-              page_path: window.location.pathname,
-              utm: utmPayload,
-            });
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = "Request a Callback";
-            }
-            if (errorMsg) errorMsg.classList.remove("d-none");
+          // GA4 must never receive PII - name/email go only to our own S3
+          // queue via SIGNUP_ENDPOINT below.
+          window.dataLayer.push({
+            event: "signup_submit",
+            category: "conversion",
+            action: "submit",
+            form_type: "signup",
+            form_location: signupForm.dataset.formLocation || "signup-page",
+            utm: utmPayload,
           });
+
+          const successMsg = signupForm.querySelector(".signup-success-msg");
+          const errorMsg = signupForm.querySelector(".signup-error-msg");
+          const submitBtn = signupForm.querySelector(".signup-submit-btn");
+          if (successMsg) successMsg.classList.add("d-none");
+          if (errorMsg) errorMsg.classList.add("d-none");
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+          }
+
+          fetch(SIGNUP_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+            .then(function (res) {
+              if (!res.ok) {
+                throw new Error("Signup endpoint returned HTTP " + res.status);
+              }
+              return res.json();
+            })
+            .then(function (data) {
+              if (!data || data.success !== true) {
+                throw new Error("Signup endpoint reported failure: " + JSON.stringify(data));
+              }
+              if (successMsg) successMsg.classList.remove("d-none");
+              if (submitBtn) submitBtn.textContent = "Request Sent ✓";
+            })
+            .catch(function (err) {
+              console.error("Signup delivery FAILED (" + (err && err.message) + ") - payload was NOT delivered:", payload);
+              window.dataLayer.push({
+                event: "form_error",
+                category: "error",
+                action: "signup_delivery_failed",
+                error_message: (err && err.message) || "Signup failed",
+                page_path: window.location.pathname,
+                utm: utmPayload,
+              });
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Request a Callback";
+              }
+              if (errorMsg) errorMsg.classList.remove("d-none");
+            });
+        });
       });
     }
 

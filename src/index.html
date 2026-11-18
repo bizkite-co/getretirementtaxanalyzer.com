@@ -30,6 +30,9 @@ title: Get The Roadmap - Turnkey Retirement Spend-Down Table
         See how a few client details become a year-by-year retirement spend-down projection,
         making it easier to spot when an income goal is met or missed.
       </p>
+      {% set signup_form_id = "video-signup-form" %}
+      {% set signup_form_location = "above-video" %}
+      {% include "signup-form.html" %}
       <video
         class="w-100 rounded shadow"
         controls
@@ -89,5 +92,11 @@ title: Get The Roadmap - Turnkey Retirement Spend-Down Table
     Start using The Roadmap today to provide your clients with the clear,
     long-term retirement income projections they need.
   </p>
-  <a href="/signup" class="btn btn-primary btn-lg">Sign Up Now</a>
+  <div class="row justify-content-center text-start">
+    <div class="col-lg-10">
+      {% set signup_form_id = "footer-signup-form" %}
+      {% set signup_form_location = "bottom-cta" %}
+      {% include "signup-form.html" %}
+    </div>
+  </div>
 </section>
